@@ -28,13 +28,13 @@ exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
             if (!user) {
-                return res.status(401).json({ error: 'Utilisateur non trouvé !' });
+                return res.status(401).json({ error: 'Utilisateur et/ou mot de passe incorrect !' });
             }
             // Comparaison du mot de passe entré avec le hash de la base de données
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                     if (!valid) {
-                        return res.status(401).json({ error: 'Mot de passe incorrect !' });
+                        return res.status(401).json({ error: 'Utilisateur et/ou mot de passe incorrect !' });
                     }
                     // Si les informations sont valides, nous renvoyons une réponse contenant userId et un token crypté
                     res.status(200).json({
