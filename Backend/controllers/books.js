@@ -47,19 +47,12 @@ exports.modifyBook = (req, res, next) => {
         .then((book) => {
             // Le livre ne peut être mis à jour que par le créateur de sa fiche
             if (book.userId != req.auth.userId) {
-                res.status(403).json({ message : '403: unauthorized request' });
-            } else {
-                // Séparation du nom du fichier image existant
-                const filename = book.imageUrl.split('/images/')[1];
-                // Si l'image a été modifiée, on supprime l'ancienne
-                req.file && fs.unlink(`images/${filename}`, (err => {
-                        if (err) console.log(err);
-                    })
-                );
+                res.status(401).json({ message : '401: Non autorisé' });
+            } else {                
                 // Mise à jour du livre
                 Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
                     .then(() => res.status(200).json({ message: 'Objet modifié !' }))
-                    .catch(error => res.status(400).json({ error }));
+                    .catch(error => res.status(401).json({ error }));
             }
         })
         .catch((error) => {
@@ -75,7 +68,7 @@ exports.deleteBook = (req, res, next) => {
         .then(book => {
             // Le livre ne peut être supprimé que par le créateur de sa fiche
             if (book.userId != req.auth.userId) {
-                res.status(403).json({ message: '403: unauthorized request' });
+                res.status(401).json({ message: '401: Non autorisé' });
             } else {
                 // Séparation du nom du fichier image
                 const filename = book.imageUrl.split('/images/')[1];
@@ -88,7 +81,7 @@ exports.deleteBook = (req, res, next) => {
             }
         })
         .catch( error => {
-            res.status(404).json({ error });
+            res.status(500).json({ error });
         });
 };
 
